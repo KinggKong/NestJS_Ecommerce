@@ -6,6 +6,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
+import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import * as process from 'node:process';
 
 @Module({
@@ -27,6 +28,7 @@ import * as process from 'node:process';
     UsersModule,
     RolesModule,
     AuthModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

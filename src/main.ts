@@ -4,11 +4,13 @@ import * as process from 'node:process';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './exception/globalHandleException';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   //config to use swagger
   const config = new DocumentBuilder()
@@ -30,7 +32,12 @@ async function bootstrap() {
     }),
   );
 
+  // ap dung handle exception cho project
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads',
+  });
 
   await app.listen(process.env.PORT ?? 3000);
   if (module.hot) {
