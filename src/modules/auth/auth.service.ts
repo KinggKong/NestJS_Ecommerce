@@ -4,17 +4,24 @@ import { UsersService } from '../users/users.service';
 import { UserLoginRequest } from './dto/request/user.login';
 import { AppException } from '../../exception/app.exception';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register(createUserRequest: CreateUserRequest) {
     return await this.userService.insertUser(createUserRequest);
   }
 
   login(user: any) {
-    return user.email;
+    const payload = { email: user.email, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async validateLogin(username: string, password: string) {

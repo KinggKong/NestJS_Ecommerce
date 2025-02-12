@@ -15,7 +15,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new AppException('LOGIN_FAILED');
     }
-    console.log('validate success');
     return user;
   }
 }

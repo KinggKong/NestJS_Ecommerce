@@ -20,4 +20,9 @@ export class UserMapper {
     userResponse.address = userEntity.address;
     return userResponse;
   }
+
+  static toUserResponseList(users: User[]) {
+    return users.map((user) => this.toUserResponse(user));
+  }
+
 }
