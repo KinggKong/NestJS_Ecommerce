@@ -8,6 +8,9 @@ import { AppException } from '../../exception/app.exception';
 import * as bcrypt from 'bcryptjs';
 import { UserMapper } from './mapper/user.mapper';
 import { UserResponse } from './dto/response/user.response';
+import { ROLES } from '../../common/enum/role.constant';
+import { Roles } from '../../common/decorator/roles.decorator';
+import { Role } from '../../entities/Role';
 
 @Injectable()
 export class UsersService {
@@ -23,9 +26,9 @@ export class UsersService {
 
     request.password = await bcrypt.hash(request.password, 10);
 
-    const insertUser = await this.userRepository.save(
-      UserMapper.toUser(request),
-    );
+    const user = UserMapper.toUser(request);
+    user.role = new Role(2, 'ROLE_USER');
+    const insertUser = await this.userRepository.save(user);
     return new ApiResponse(
       1000,
       'Created user successfully',
