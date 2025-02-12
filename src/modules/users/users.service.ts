@@ -8,8 +8,6 @@ import { AppException } from '../../exception/app.exception';
 import * as bcrypt from 'bcryptjs';
 import { UserMapper } from './mapper/user.mapper';
 import { UserResponse } from './dto/response/user.response';
-import { ROLES } from '../../common/enum/role.constant';
-import { Roles } from '../../common/decorator/roles.decorator';
 import { Role } from '../../entities/Role';
 
 @Injectable()
