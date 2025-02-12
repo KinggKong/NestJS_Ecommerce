@@ -3,24 +3,30 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { Role } from './entities/Role';
-import { User } from './entities/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './modules/auth/auth.module';
+import * as process from 'node:process';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.DATABASE_HOST,
       port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'test',
-      entities: [User, Role],
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      autoLoadEntities: true, // load de tao entity trong db
     }),
     UsersModule,
     RolesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
