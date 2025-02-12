@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -14,11 +15,14 @@ import { CreateUserRequest } from './dto/request/user.create';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../../entities/User';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../../common/decorator/roles.decorator';
+import { ROLES } from '../../common/enum/role.constant';
 
 @Controller('/api/v1/users')
 @ApiTags('01.Users')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -37,6 +41,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(ROLES.ADMIN)
   getAllUser() {
     return this.usersService.findAll();
   }

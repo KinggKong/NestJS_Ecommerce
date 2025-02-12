@@ -1,7 +1,14 @@
-import { Controller } from '@nestjs/common';
-import { RolesService } from './roles.service';
+import { Controller, Get } from '@nestjs/common';
+import { RoleService } from './roles.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('roles')
+@Controller('/api/v1/roles')
+@ApiTags('03.Roles')
 export class RolesController {
-  constructor(private readonly rolesService: RolesService) {}
+  constructor(private readonly roleService: RoleService) {}
+
+  @Get()
+  getAllRoles() {
+    return this.roleService.getAllRoles();
+  }
 }

@@ -21,9 +21,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  @ApiBody({
-    description: 'Login with account',
-  })
+  @ApiBody({ type: UserLoginRequest, description: 'Login with account' })
   login(@Req() req: any) {
     return this.authService.login(req.user);
   }

@@ -34,7 +34,10 @@ export class UsersService {
   }
 
   async isExistedByEmail(email: string): Promise<User | null> {
-    return await this.userRepository.findOneBy({ email });
+    return await this.userRepository.findOne({
+      where: { email },
+      relations: ['role'],
+    });
   }
 
   async isExistById(id: number): Promise<User | null> {

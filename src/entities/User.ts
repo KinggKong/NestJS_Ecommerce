@@ -1,5 +1,13 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseEntity } from './BaseEntity';
+import { Role } from './Role';
 
 @Entity()
 export class User extends BaseEntity {
@@ -20,4 +28,8 @@ export class User extends BaseEntity {
 
   @Column()
   email: string;
+
+  @ManyToOne(() => Role, (role) => role.id)
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 }

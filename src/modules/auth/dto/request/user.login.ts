@@ -8,7 +8,7 @@ export class UserLoginRequest {
   })
   @IsString({ message: 'email must be string' })
   @IsNotEmpty({ message: 'email cant empty or null' })
-  email: string;
+  username: string;
 
   @ApiProperty({ example: '88888888', description: 'Password of the user' })
   @IsString({ message: 'password must be string' })
