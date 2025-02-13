@@ -3,7 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  Param, ParseIntPipe,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -43,8 +44,12 @@ export class UsersController {
 
   @Get()
   @Roles(ROLES.ADMIN)
-  getAllUser( @Query('page', ParseIntPipe) page: number,
-              @Query('size', ParseIntPipe) size: number) {
+  getAllUser(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+  ) {
+    page = Math.max(1, page);
+    size = Math.max(1, size);
     return this.usersService.findAll(page, size);
   }
 

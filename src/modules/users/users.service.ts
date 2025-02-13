@@ -17,7 +17,9 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async insertUser(request: CreateUserRequest): Promise<ApiResponse<UserResponse>> {
+  async insertUser(
+    request: CreateUserRequest,
+  ): Promise<ApiResponse<UserResponse>> {
     await this.validateCreateUser(request);
 
     request.password = await this.hashPassword(request.password);
@@ -26,15 +28,26 @@ export class UsersService {
     user.role = new Role(2, 'ROLE_USER');
 
     const insertedUser = await this.userRepository.save(user);
-    return new ApiResponse(1000, 'User created successfully', UserMapper.toUserResponse(insertedUser));
+    return new ApiResponse(
+      1000,
+      'User created successfully',
+      UserMapper.toUserResponse(insertedUser),
+    );
   }
 
   async findById(id: number): Promise<ApiResponse<UserResponse>> {
     const user = await this.findUserById(id);
-    return new ApiResponse(1000, `User found with id: ${id}`, UserMapper.toUserResponse(user));
+    return new ApiResponse(
+      1000,
+      `User found with id: ${id}`,
+      UserMapper.toUserResponse(user),
+    );
   }
 
   async findAll(page: number, size: number): Promise<ApiResponse<any>> {
+    if (page < 0) {
+      page = 1;
+    }
     const [users, total] = await this.userRepository.findAndCount({
       skip: (page - 1) * size,
       take: size,
@@ -51,21 +64,34 @@ export class UsersService {
     });
   }
 
-  async updateUser(id: number, userUpdate: Partial<User>): Promise<ApiResponse<UserResponse>> {
+  async updateUser(
+    id: number,
+    userUpdate: Partial<User>,
+  ): Promise<ApiResponse<UserResponse>> {
     const user = await this.findUserById(id);
     await this.userRepository.update(id, userUpdate);
 
-    return new ApiResponse(1000, `User updated successfully with id: ${id}`, { ...user, ...userUpdate });
+    return new ApiResponse(1000, `User updated successfully with id: ${id}`, {
+      ...user,
+      ...userUpdate,
+    });
   }
 
   async deleteUser(id: number): Promise<ApiResponse<string>> {
     await this.findUserById(id);
     await this.userRepository.delete(id);
-    return new ApiResponse(1000, `User deleted successfully with id: ${id}`, 'Deleted user successfully');
+    return new ApiResponse(
+      1000,
+      `User deleted successfully with id: ${id}`,
+      'Deleted user successfully',
+    );
   }
 
   private async findUserById(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id }, relations: ['role'] });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['role'],
+    });
     if (!user) throw new AppException('USER_NOT_FOUND');
     return user;
   }
@@ -76,12 +102,21 @@ export class UsersService {
     });
 
     if (existingUser) {
-      if (existingUser.email === request.email) throw new AppException('USER_EMAIL_EXISTED');
-      if (existingUser.username === request.username) throw new AppException('USER_USERNAME_EXISTED');
+      if (existingUser.email === request.email)
+        throw new AppException('USER_EMAIL_EXISTED');
+      if (existingUser.username === request.username)
+        throw new AppException('USER_USERNAME_EXISTED');
     }
   }
 
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
+  }
+
+  async isExistedByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { email },
+      relations: ['role'],
+    });
   }
 }

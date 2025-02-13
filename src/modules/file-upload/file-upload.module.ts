@@ -18,5 +18,6 @@ import { diskStorage } from 'multer';
       }),
     }),
   ],
+  exports: [FileUploadService],
 })
 export class FileUploadModule {}

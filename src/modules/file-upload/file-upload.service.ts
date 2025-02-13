@@ -2,9 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FileUploadService {
-  handleFileUpload(file: Express.Multer.File) {
+  async handleFileUpload(file: Express.Multer.File) {
     if (!file) {
-      throw new BadRequestException('no file uploaded');
+      // throw new BadRequestException('no file uploaded');
+      return '';
     }
 
     // validate file type
@@ -19,11 +20,6 @@ export class FileUploadService {
       throw new BadRequestException('file is too large!');
     }
 
-    const filePath = `uploads/${file.filename}`.replace(/\\/g, '/');
-
-    return {
-      message: 'File uploaded successfully',
-      filePath: `http://localhost:3000/${filePath}`,
-    };
+    return `http://localhost:3000/uploads/${file.filename}`.replace(/\\/g, '/');
   }
 }

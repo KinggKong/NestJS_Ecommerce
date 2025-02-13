@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { ProductsModule } from './modules/products/products.module';
+import { ImagesModule } from './modules/images/images.module';
 import * as process from 'node:process';
 
 @Module({
@@ -31,6 +32,7 @@ import * as process from 'node:process';
     AuthModule,
     FileUploadModule,
     ProductsModule,
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
