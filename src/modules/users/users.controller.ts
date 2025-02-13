@@ -3,9 +3,10 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
   ValidationPipe,
@@ -42,8 +43,9 @@ export class UsersController {
 
   @Get()
   @Roles(ROLES.ADMIN)
-  getAllUser() {
-    return this.usersService.findAll();
+  getAllUser( @Query('page', ParseIntPipe) page: number,
+              @Query('size', ParseIntPipe) size: number) {
+    return this.usersService.findAll(page, size);
   }
 
   @Put(':id')

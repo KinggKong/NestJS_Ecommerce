@@ -10,6 +10,11 @@ export const ErrorCode = {
   USER_EMAIL_NOT_EXIST: { code: 4000, message: 'User Email Not Exist' },
 
   LOGIN_FAILED: { code: 4000, message: 'Login Failed, Wrong Password or Username' },
+
+
+  ROLE_NOT_FOUND: { code: 2000, message: 'Role Not Found' },
+  ROLE_EXISTED: { code: 4000, message: 'Role Exist' },
+  ROLE_NAME_EXIST: { code: 4000, message: 'Role Name Exist' },
 } as const;
 
 export type ErrorCodeType = keyof typeof ErrorCode;
