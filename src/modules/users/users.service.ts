@@ -87,7 +87,7 @@ export class UsersService {
     );
   }
 
-  private async findUserById(id: number): Promise<User> {
+   async findUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['role'],
@@ -118,5 +118,9 @@ export class UsersService {
       where: { email },
       relations: ['role'],
     });
+  }
+
+  getProfile(user: any) {
+    return new ApiResponse(1000, 'get profile successfully', user);
   }
 }

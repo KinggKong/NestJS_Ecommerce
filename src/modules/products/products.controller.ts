@@ -53,7 +53,7 @@ export class ProductsController {
   }
 
   @Get()
-  @Roles(ROLES.USER)
+  @Roles(ROLES.ADMIN)
   getAllProduct(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number,

@@ -8,18 +8,17 @@ import {
   Post,
   Put,
   Query,
-  Req,
+  Request,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserRequest } from './dto/request/user.create';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../../entities/User';
+
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { ROLES } from '../../common/enum/role.constant';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('/api/v1/users')
 @ApiTags('01.Users')
@@ -37,10 +36,18 @@ export class UsersController {
     return this.usersService.insertUser(createUserRequest);
   }
 
+  @Get('/pro')
+  getProfile(@Request() req: any) {
+    console.log('profle',req.user);
+    return req.user;
+  }
+
   @Get(':id')
-  findById(@Param('id') id: number) {
+  findById(@Param('id') id: number, @Request() req: any) {
     return this.usersService.findById(id);
   }
+
+
 
   @Get()
   @Roles(ROLES.ADMIN)
@@ -62,4 +69,6 @@ export class UsersController {
   remove(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
+
+
 }
