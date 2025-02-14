@@ -12,7 +12,7 @@ declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  //config to use swagger
+
   const config = new DocumentBuilder()
     .setTitle('Api nest_ecommerce example')
     .setDescription('The nest_project ecommerce API description')
@@ -23,10 +23,9 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, documentFactory);
 
-  //config to use validate pipes global
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Loại bỏ các field không khai báo trong DTO
+      whitelist: false, // Loại bỏ các field không khai báo trong DTO
       forbidNonWhitelisted: true, // Chặn request có field không hợp lệ
       transform: true, // Tự động chuyển đổi kiểu dữ liệu (nếu cần)
     }),

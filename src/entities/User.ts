@@ -23,7 +23,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   avt?: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
   @Column()

@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose, Transform } from 'class-transformer';
 
 export class CreateUserRequest {
   @ApiProperty({ example: 'john_doe', description: 'Username of the user' })
@@ -28,5 +29,6 @@ export class CreateUserRequest {
   })
   @IsString({ message: 'address must be string' })
   @IsNotEmpty({ message: 'address cant empty or null' })
+  @Transform(({ value }) => (value === null ? undefined : value))
   address: string;
 }

@@ -9,6 +9,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserMapper } from './mapper/user.mapper';
 import { UserResponse } from './dto/response/user.response';
 import { Role } from '../../entities/Role';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -24,8 +25,13 @@ export class UsersService {
 
     request.password = await this.hashPassword(request.password);
 
-    const user = UserMapper.toUser(request);
+    // const user = UserMapper.toUser(request);
+    // user.role = new Role(2, 'ROLE_USER');
+
+    const user = plainToInstance(User, request);
     user.role = new Role(2, 'ROLE_USER');
+
+    console.log(user);
 
     const insertedUser = await this.userRepository.save(user);
     return new ApiResponse(
@@ -40,7 +46,8 @@ export class UsersService {
     return new ApiResponse(
       1000,
       `User found with id: ${id}`,
-      UserMapper.toUserResponse(user),
+      // UserMapper.toUserResponse(user),
+      plainToInstance(UserResponse, user),
     );
   }
 
@@ -87,7 +94,7 @@ export class UsersService {
     );
   }
 
-   async findUserById(id: number): Promise<User> {
+  async findUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['role'],
