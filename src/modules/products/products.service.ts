@@ -44,8 +44,11 @@ export class ProductsService {
     return product;
   }
 
-  async findById(id: number) {
-    const product = await this.productRepository.findOneBy({ id });
+  async findById(id: number, relations: string[] = []) {
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations,
+    });
     if (!product) throw new AppException('PRODUCT_NOT_FOUND');
     return product;
   }
@@ -57,7 +60,7 @@ export class ProductsService {
   }
 
   async getAllProduct(page: number, size: number) {
-    const [products,total] = await this.productRepository.findAndCount({
+    const [products, total] = await this.productRepository.findAndCount({
       skip: (page - 1) * size,
       take: size,
       relations: ['images'],
@@ -74,7 +77,7 @@ export class ProductsService {
   }
 
   async getById(id: number) {
-    const product = await this.findById(id);
+    const product = await this.findById(id,['images']);
     return new ApiResponse(1000, 'get product', product);
   }
 

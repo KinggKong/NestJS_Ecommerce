@@ -36,9 +36,8 @@ export class UsersController {
     return this.usersService.insertUser(createUserRequest);
   }
 
-  @Get('/pro')
+  @Get('/profile')
   getProfile(@Request() req: any) {
-    console.log('profle',req.user);
     return req.user;
   }
 
