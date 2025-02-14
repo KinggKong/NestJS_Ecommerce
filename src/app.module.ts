@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -10,6 +10,9 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ImagesModule } from './modules/images/images.module';
 import * as process from 'node:process';
+import { LoggingMiddleware } from './middleware/logging.middleware';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { TimingMiddleware } from './middleware/timing.middleware';
 
 @Module({
   imports: [
@@ -37,4 +40,12 @@ import * as process from 'node:process';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      .apply(LoggingMiddleware, AuthMiddleware, TimingMiddleware)
+      .exclude('auth', 'auth/(.*)')
+      .forRoutes('*');
+
+  }
+}

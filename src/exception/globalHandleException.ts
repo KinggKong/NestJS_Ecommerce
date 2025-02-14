@@ -20,7 +20,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let apiResponse: ApiResponse<string | null>;
 
     if (exception instanceof AppException) {
-      // Xử lý lỗi do người dùng ném ra
       const errorResponse = exception.getResponse() as any;
       apiResponse = new ApiResponse(
         errorResponse.errorCode,
@@ -30,7 +29,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       );
       response.status(exception.getStatus()).json(apiResponse);
     } else if (exception instanceof BadRequestException) {
-      // Xử lý lỗi validation (tương đương `MethodArgumentNotValidException` trong Spring Boot)
       const errorResponse = exception.getResponse() as any;
       const message = errorResponse.message || ErrorCode.INVALID_KEY.message;
       apiResponse = new ApiResponse(
@@ -41,14 +39,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       );
       response.status(exception.getStatus()).json(apiResponse);
     } else if (exception instanceof HttpException) {
-      // Xử lý các ngoại lệ HTTP khác
       const status = exception.getStatus();
       const errorResponse = exception.getResponse() as any;
       const message = errorResponse.message || 'Unknown error';
       apiResponse = new ApiResponse(status, message, null, request.url);
       response.status(status).json(apiResponse);
     } else {
-      // Xử lý tất cả các lỗi khác (tương tự `Exception.class` trong Spring Boot)
       apiResponse = new ApiResponse(
         ErrorCode.UNCATEGORIZED_EXCEPTION.code,
         ErrorCode.UNCATEGORIZED_EXCEPTION.message,
