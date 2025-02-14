@@ -19,6 +19,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { ROLES } from '../../common/enum/role.constant';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiResponse } from '../../common/api.response';
 
 @Controller('/api/v1/users')
 @ApiTags('01.Users')
@@ -38,7 +39,7 @@ export class UsersController {
 
   @Get('/profile')
   getProfile(@Request() req: any) {
-    return req.user;
+    return this.usersService.getProfile(req.user);
   }
 
   @Get(':id')

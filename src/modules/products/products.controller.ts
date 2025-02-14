@@ -9,13 +9,14 @@ import {
   Put,
   Query,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductCreateRequest } from './dto/product.create';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -31,8 +32,19 @@ import { Min } from 'class-validator';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        price: { type: 'number' },
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   @Post()
-  @Roles(ROLES.ADMIN)
+  @Roles(ROLES.ADMIN,ROLES.USER)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -58,7 +70,6 @@ export class ProductsController {
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number,
   ) {
-
     return this.productsService.getAllProduct(page, size);
   }
 
@@ -81,5 +92,38 @@ export class ProductsController {
     @Body() request: ProductCreateRequest,
   ) {
     return this.productsService.updateProduct(id, request);
+  }
+
+
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        price: { type: 'number' },
+        files: { type: 'array', items: { type: 'string', format: 'binary' } }
+      },
+    },
+  })
+  @Post('/insertWithManyImages')
+  @Roles(ROLES.ADMIN, ROLES.USER)
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  async insertProductWithImages(
+    @Body() request: ProductCreateRequest,
+    @UploadedFiles() files?: Express.Multer.File[],
+  ) {
+    return this.productsService.insertProductWithImages(request, files || []);
   }
 }

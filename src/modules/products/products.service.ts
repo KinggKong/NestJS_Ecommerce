@@ -77,7 +77,7 @@ export class ProductsService {
   }
 
   async getById(id: number) {
-    const product = await this.findById(id,['images']);
+    const product = await this.findById(id, ['images']);
     return new ApiResponse(1000, 'get product', product);
   }
 
@@ -101,5 +101,33 @@ export class ProductsService {
       'updated product successfully',
       productAfterUpdate,
     );
+  }
+
+  async insertProductWithImages(
+    request: ProductCreateRequest,
+    files: Express.Multer.File[],
+  ) {
+    await this.ensureProductNameNotExists(request.name);
+
+    const insertProduct = await this.productRepository.save(
+      ProductMapper.toProductEntity(request),
+    );
+
+    let urls: string[] = [];
+
+    if (files.length > 0) {
+      urls = await Promise.all(
+        files.map((file) => this.fileUploadService.handleFileUpload(file)),
+      );
+
+      await Promise.all(
+        urls.map((url) => this.imagesService.insertImage(insertProduct, url)),
+      );
+    }
+
+    return new ApiResponse(1000, 'insert product successfully', {
+      ...insertProduct,
+      urls,
+    });
   }
 }

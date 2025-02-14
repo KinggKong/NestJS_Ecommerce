@@ -28,4 +28,6 @@ export class ImagesController {
   ) {
     return this.imagesService.uploadImageProduct(idProduct, file);
   }
+
+
 }
