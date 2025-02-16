@@ -130,4 +130,21 @@ export class UsersService {
   getProfile(user: any) {
     return new ApiResponse(1000, 'get profile successfully', user);
   }
+
+  async saveAccessToken(accessToken: string, req: any) {
+    const user = await this.findUserById(req.id);
+    user.access_token = accessToken;
+    return await this.userRepository.save(user);
+  }
+
+  async validateAccessToken(accessToken: string, userId: number) {
+    console.log('access token ở hàm verify user service:', accessToken);
+    const user = await this.findUserById(userId);
+    console.log('Token trong user: ', user.access_token);
+
+    if (accessToken !== user.access_token) {
+      throw new AppException('ACCESS_TOKEN_INVALID');
+    }
+    return user;
+  }
 }

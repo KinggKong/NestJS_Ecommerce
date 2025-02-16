@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
@@ -32,4 +31,7 @@ export class User extends BaseEntity {
   @ManyToOne(() => Role, (role) => role.id)
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @Column()
+  access_token: string;
 }

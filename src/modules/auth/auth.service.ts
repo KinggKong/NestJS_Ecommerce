@@ -24,10 +24,22 @@ export class AuthService {
 
   login(user: any) {
     const payload = { email: user.email, sub: user.id, role: user.role.name };
+    const accessToken = this.jwtService.sign(payload);
+    this.userService.saveAccessToken(accessToken, user);
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
     };
   }
+
+  async validateAccessToken(accessToken: string) {
+    try {
+      const payload = await this.jwtService.verify(accessToken);
+      return await this.userService.validateAccessToken(accessToken, payload.sub);
+    } catch (error) {
+      return null;
+    }
+  }
+
 
   async validateLogin(username: string, password: string) {
     const isExistedByEmail = await this.userService.isExistedByEmail(username);
