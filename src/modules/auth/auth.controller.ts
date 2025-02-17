@@ -1,13 +1,23 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserRequest } from '../users/dto/request/user.create';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiHeaders, ApiTags } from '@nestjs/swagger';
 import { UserLoginRequest } from './dto/request/user.login';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('02.Auth')
+@ApiBearerAuth()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -26,6 +36,22 @@ export class AuthController {
   login(@Req() req: any) {
     return this.authService.login(req.user);
   }
+
+  @Post('/refresh-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        refresh_token: { type: 'string' },
+      },
+    },
+  })
+  // @UseGuards(JwtAuthGuard)
+  refreshToken(@Body() refresh_token: { refresh_token: string }) {
+    return this.authService.refreshToken(refresh_token.refresh_token);
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleLogin() {
@@ -36,7 +62,9 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleRedirect(@Req() req, @Res() res) {
     const authResult = await this.authService.loginWithGoogle(req.user);
-    return res.redirect(`http://localhost:3000/auth/success?token=${authResult.accessToken}`);
+    return res.redirect(
+      `http://localhost:3000/auth/success?token=${authResult.accessToken}`,
+    );
   }
 
   @Get('success')

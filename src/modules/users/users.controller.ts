@@ -19,7 +19,6 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorator/roles.decorator';
 import { ROLES } from '../../common/enum/role.constant';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiResponse } from '../../common/api.response';
 
 @Controller('/api/v1/users')
 @ApiTags('01.Users')
@@ -47,8 +46,6 @@ export class UsersController {
     return this.usersService.findById(id);
   }
 
-
-
   @Get()
   @Roles(ROLES.ADMIN)
   getAllUser(
@@ -69,6 +66,4 @@ export class UsersController {
   remove(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
-
-
 }

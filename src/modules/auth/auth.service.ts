@@ -8,6 +8,7 @@ import { Role } from '../../entities/Role';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/User';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as process from 'node:process';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +25,15 @@ export class AuthService {
 
   login(user: any) {
     const payload = { email: user.email, sub: user.id, role: user.role.name };
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: process.env.JWT_EXPIRE_TIME_REFRESH_TOKEN,
+    });
+    const access_token = this.jwtService.sign(payload);
+    this.userService.insertRefreshToken(refreshToken, user.id);
+    this.userService.insertAccessToken(access_token, user.id);
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: access_token,
+      refresh_token: refreshToken,
     };
   }
 
@@ -86,5 +94,26 @@ export class AuthService {
       user: existingUser,
       accessToken: token,
     };
+  }
+
+  async refreshToken(refresh_token: string) {
+    const decoded = this.jwtService.decode(refresh_token);
+    if (!decoded) {
+      throw new AppException('INVALID_REFRESH_TOKEN');
+    }
+    const user = await this.userService.verifyRefreshToken(
+      refresh_token,
+      decoded.sub,
+    );
+    return this.login(user);
+  }
+
+  async verifyAccessToken(accessToken: string) {
+    try {
+      const payload = await this.jwtService.verify(accessToken);
+      return await this.userService.verifyAccessToken(accessToken, payload.sub);
+    } catch (error) {
+      return null;
+    }
   }
 }

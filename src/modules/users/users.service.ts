@@ -31,7 +31,6 @@ export class UsersService {
     const user = plainToInstance(User, request);
     user.role = new Role(2, 'ROLE_USER');
 
-    console.log(user);
 
     const insertedUser = await this.userRepository.save(user);
     return new ApiResponse(
@@ -129,5 +128,35 @@ export class UsersService {
 
   getProfile(user: any) {
     return new ApiResponse(1000, 'get profile successfully', user);
+  }
+
+  async insertRefreshToken(refreshToken: string, idUser: number) {
+    const user = await this.findUserById(idUser);
+    user.refresh_token = await this.hashPassword(refreshToken);
+    return this.userRepository.save(user);
+  }
+
+  async insertAccessToken(accessToken: string, idUser: number) {
+    const user = await this.findUserById(idUser);
+    console.log(accessToken);
+    user.access_token = accessToken;
+    return await this.userRepository.save(user);
+  }
+
+  async verifyRefreshToken(refreshToken: string, idUser: number) {
+    const user = await this.findUserById(idUser);
+    const status = await bcrypt.compare(refreshToken, user.refresh_token);
+    if (!status) {
+      throw new AppException('INVALID_REFRESH_TOKEN');
+    }
+    return user;
+  }
+
+  async verifyAccessToken(accessToken: string, idUser: number) {
+    const user = await this.findUserById(idUser);
+    if (accessToken !== user.access_token) {
+      throw new AppException('ACCESS_TOKEN_INVALID');
+    }
+    return user;
   }
 }

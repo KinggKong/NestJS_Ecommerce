@@ -29,6 +29,12 @@ export class User extends BaseEntity {
   @Column()
   email: string;
 
+  @Column({ nullable: true })
+  refresh_token: string;
+
+  @Column({ nullable: true })
+  access_token: string;
+
   @ManyToOne(() => Role, (role) => role.id)
   @JoinColumn({ name: 'role_id' })
   role: Role;

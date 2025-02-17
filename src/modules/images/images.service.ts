@@ -36,19 +36,8 @@ export class ImagesService {
   }
 
   async uploadImageProduct(productId: number, file: Express.Multer.File) {
-    if (!file) {
-      throw new BadRequestException('no file uploaded');
-    }
+    this.validateImage(file);
 
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException('invalid file type');
-    }
-
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      throw new BadRequestException('file is too large!');
-    }
     const url = process.env.SOURCE_URL + `${file.filename}`.replace(/\\/g, '/');
     const image = this.imageRepository.create({
       url,
@@ -62,5 +51,21 @@ export class ImagesService {
       'insert image product successfully',
       insertImage,
     );
+  }
+
+  validateImage(file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('no file uploaded');
+    }
+
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException('invalid file type');
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      throw new BadRequestException('file is too large!');
+    }
   }
 }

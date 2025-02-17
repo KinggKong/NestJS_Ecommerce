@@ -1,10 +1,13 @@
 export const ErrorCode = {
-
   INVALID_KEY: { code: 2000, message: 'Invalid key' },
   UNCATEGORIZED_EXCEPTION: { code: 9999, message: 'Uncategorized exception' },
   PERMISSION_DENIED: { code: 2000, message: 'Permission denied' },
-  LOGIN_FAILED: { code: 4000, message: 'Login Failed, Wrong Password or Username' },
-
+  LOGIN_FAILED: {
+    code: 4000,
+    message: 'Login Failed, Wrong Password or Username',
+  },
+  INVALID_REFRESH_TOKEN: { code: 2000, message: 'Invalid refresh token' },
+  ACCESS_TOKEN_INVALID: { code: 2000, message: 'Invalid access token' },
 
   PRODUCT_NAME_EXIST: { code: 4000, message: 'Product name existed' },
   PRODUCT_NOT_FOUND: { code: 2000, message: 'Product Not Found' },
@@ -17,8 +20,6 @@ export const ErrorCode = {
   ROLE_NOT_FOUND: { code: 2000, message: 'Role Not Found' },
   ROLE_EXISTED: { code: 4000, message: 'Role Exist' },
   ROLE_NAME_EXIST: { code: 4000, message: 'Role Name Exist' },
-
-
 } as const;
 
 export type ErrorCodeType = keyof typeof ErrorCode;
