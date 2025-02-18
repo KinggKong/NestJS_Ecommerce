@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../entities/User';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as process from 'node:process';
+import { ApiResponse } from '../../common/api.response';
 
 @Injectable()
 export class AuthService {
@@ -115,5 +116,13 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async logout(user) {
+    console.log(user);
+    const existedUser = await this.userService.findUserById(user.userId);
+    existedUser.access_token = '';
+    await this.userService.updateUser(user.userId, existedUser);
+    return new ApiResponse(1000, 'Logout successfully', 'logout successfully');
   }
 }

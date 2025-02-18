@@ -47,7 +47,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(ROLES.ADMIN)
+  @Roles(ROLES.ADMIN,ROLES.USER)
   getAllUser(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number,
@@ -58,11 +58,13 @@ export class UsersController {
   }
 
   @Put(':id')
+  @Roles(ROLES.ADMIN,ROLES.USER)
   updateUser(@Body() userUpdate: CreateUserRequest, @Param('id') id: number) {
     return this.usersService.updateUser(id, userUpdate);
   }
 
   @Delete(':id')
+  @Roles(ROLES.ADMIN,ROLES.USER)
   remove(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
